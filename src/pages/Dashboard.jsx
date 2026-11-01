@@ -8,30 +8,47 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { Activity, TrendingUp, Shield, AlertTriangle } from "lucide-react";
+import { Activity, TrendingUp, Shield, AlertTriangle, ChevronRight } from "lucide-react";
 import { SectionTitle } from "../components/SectionTitle";
 import { CyberCard } from "../components/CyberCard";
 import { StatsCard } from "../components/StatsCard";
-import { userPerformance } from "../data/dashboardData";
+import { AnimatedButton } from "../components/AnimatedButton";
 import { useTheme } from "../context/ThemeContext";
 import { staggerContainer, fadeInUp } from "../animations/variants";
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
+  const data = payload[0]?.payload;
   return (
     <div className="glass-card p-3 rounded-lg border border-neon-green/20 text-sm">
       <p className="text-white font-mono mb-1">{label}</p>
+      {data?.date && <p className="text-xs text-slate-400 font-mono mb-1">Date: {data.date}</p>}
       {payload.map((p, i) => (
         <p key={i} style={{ color: p.color }}>
-          {p.name}: {p.value}
+          {p.name}: {p.value}%
         </p>
       ))}
+      {data?.detail && (
+        <p className="text-xs text-slate-400 mt-1 font-mono">
+          Score: {data.detail}
+        </p>
+      )}
     </div>
   );
 };
 
 export const Dashboard = () => {
   const { simulationStats, quizScores } = useTheme();
+
+  const chartData = (quizScores || []).map((q, idx) => ({
+    attempt: `Quiz ${idx + 1}`,
+    score: q.pct,
+    date: new Date(q.date).toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric",
+    }),
+    detail: `${q.score}/${q.total}`,
+  }));
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -63,23 +80,50 @@ export const Dashboard = () => {
       {/* User performance line */}
       <div className="mb-8">
         <CyberCard>
-          <h3 className="text-white font-semibold mb-4">Training Performance Trend</h3>
-          <ResponsiveContainer width="100%" height={280}>
-            <LineChart data={userPerformance}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-              <XAxis dataKey="week" stroke="#64748b" fontSize={12} />
-              <YAxis stroke="#64748b" fontSize={12} domain={[0, 100]} />
-              <Tooltip content={<CustomTooltip />} />
-              <Line
-                type="monotone"
-                dataKey="score"
-                stroke="#00ff88"
-                strokeWidth={2}
-                dot={{ fill: "#00ff88", r: 4 }}
-                name="Score %"
-              />
-            </LineChart>
-          </ResponsiveContainer>
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <h3 className="text-white font-semibold">Training Performance Trend</h3>
+              <p className="text-xs text-slate-400 mt-0.5">Quiz score trajectory across completed sessions</p>
+            </div>
+            {chartData.length > 0 && (
+              <span className="text-xs font-mono text-neon-green bg-neon-green/10 px-2.5 py-1 rounded border border-neon-green/30">
+                {chartData.length} {chartData.length === 1 ? "Session" : "Sessions"}
+              </span>
+            )}
+          </div>
+
+          {chartData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={280}>
+              <LineChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                <XAxis dataKey="attempt" stroke="#64748b" fontSize={12} />
+                <YAxis stroke="#64748b" fontSize={12} domain={[0, 100]} unit="%" />
+                <Tooltip content={<CustomTooltip />} />
+                <Line
+                  type="monotone"
+                  dataKey="score"
+                  stroke="#00ff88"
+                  strokeWidth={2}
+                  dot={{ fill: "#00ff88", r: 4 }}
+                  activeDot={{ r: 6, fill: "#00d4ff" }}
+                  name="Score"
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="py-12 text-center">
+              <TrendingUp className="mx-auto text-slate-600 mb-3" size={40} />
+              <p className="text-sm font-medium text-slate-300 mb-1">
+                No quiz performance recorded yet
+              </p>
+              <p className="text-xs text-slate-500 mb-6 max-w-sm mx-auto">
+                Complete your first Cyber Safety Quiz to visualize your score progression and accuracy trend.
+              </p>
+              <AnimatedButton to="/quiz" icon={ChevronRight} variant="secondary">
+                Take a Quiz
+              </AnimatedButton>
+            </div>
+          )}
         </CyberCard>
       </div>
 
