@@ -22,15 +22,15 @@ const CustomTooltip = ({ active, payload, label }) => {
   return (
     <div className="glass-card p-3 rounded-lg border border-neon-green/20 text-sm">
       <p className="text-white font-mono mb-1">{label}</p>
-      {data?.date && <p className="text-xs text-slate-400 font-mono mb-1">Date: {data.date}</p>}
+      {data?.date && <p className="text-xs text-slate-400 font-mono mb-1">{data.date}</p>}
       {payload.map((p, i) => (
         <p key={i} style={{ color: p.color }}>
           {p.name}: {p.value}%
         </p>
       ))}
       {data?.detail && (
-        <p className="text-xs text-slate-400 mt-1 font-mono">
-          Score: {data.detail}
+        <p className="text-xs text-slate-400 mt-0.5 font-mono">
+          Result: {data.detail} correct
         </p>
       )}
     </div>
@@ -40,15 +40,24 @@ const CustomTooltip = ({ active, payload, label }) => {
 export const Dashboard = () => {
   const { simulationStats, quizScores } = useTheme();
 
-  const chartData = (quizScores || []).map((q, idx) => ({
-    attempt: `Quiz ${idx + 1}`,
-    score: q.pct,
-    date: new Date(q.date).toLocaleDateString(undefined, {
-      month: "short",
-      day: "numeric",
-    }),
-    detail: `${q.score}/${q.total}`,
-  }));
+  const chartData = (quizScores || []).map((q, idx) => {
+    let formattedDate = "";
+    if (q?.date) {
+      const parsed = new Date(q.date);
+      if (!isNaN(parsed.getTime())) {
+        formattedDate = parsed.toLocaleDateString(undefined, {
+          month: "short",
+          day: "numeric",
+        });
+      }
+    }
+    return {
+      attempt: `Quiz ${idx + 1}`,
+      score: typeof q?.pct === "number" ? q.pct : Math.round(((q?.score || 0) / (q?.total || 1)) * 100),
+      date: formattedDate,
+      detail: `${q?.score ?? 0}/${q?.total ?? 0}`,
+    };
+  });
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -106,7 +115,7 @@ export const Dashboard = () => {
                   strokeWidth={2}
                   dot={{ fill: "#00ff88", r: 4 }}
                   activeDot={{ r: 6, fill: "#00d4ff" }}
-                  name="Score"
+                  name="Accuracy"
                 />
               </LineChart>
             </ResponsiveContainer>
