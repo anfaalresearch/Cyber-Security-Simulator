@@ -156,7 +156,7 @@ export const Dashboard = () => {
               <p className="text-xs text-slate-500 mb-6 max-w-sm mx-auto">
                 Complete your first Cyber Safety Quiz to visualize your score progression and accuracy trend.
               </p>
-              <AnimatedButton to="/quiz" icon={ChevronRight} variant="secondary">
+              <AnimatedButton to="/cyber-quiz" icon={ChevronRight} variant="secondary">
                 Take a Quiz
               </AnimatedButton>
             </div>
