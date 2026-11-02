@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
 import { Clock, Trophy, RotateCcw, ChevronRight } from "lucide-react";
 import { SectionTitle } from "../components/SectionTitle";
@@ -23,9 +23,11 @@ export const CyberQuiz = () => {
   const [finished, setFinished] = useState(false);
   const [timeLeft, setTimeLeft] = useState(QUIZ_TIME);
   const [started, setStarted] = useState(false);
+  const hasRecordedRef = useRef(false);
   const { recordQuizScore, unlockAchievement, addXP } = useTheme();
 
   const startQuiz = useCallback(() => {
+    hasRecordedRef.current = false;
     setQuestions(shuffleArray(quizQuestions).slice(0, QUESTIONS_PER_QUIZ));
     setCurrent(0);
     setSelected(null);
@@ -76,7 +78,8 @@ export const CyberQuiz = () => {
   };
 
   useEffect(() => {
-    if (finished && started && questions.length > 0) {
+    if (finished && started && questions.length > 0 && !hasRecordedRef.current) {
+      hasRecordedRef.current = true;
       recordQuizScore(score, questions.length);
       if (score > 0) {
         addXP(score * XP_REWARDS.QUIZ_CORRECT);

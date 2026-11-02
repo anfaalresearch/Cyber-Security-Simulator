@@ -6,7 +6,7 @@ import { CyberCard } from "./CyberCard";
 import { cn } from "../utils/helpers";
 
 export const RankCard = () => {
-  const { rankInfo, xp } = useTheme();
+  const { rankInfo, xp, resetProgress } = useTheme();
 
   if (!rankInfo) return null;
 
@@ -158,13 +158,27 @@ export const RankCard = () => {
       </div>
 
       {/* XP earning methods footer */}
-      <div className="mt-5 pt-4 border-t border-cyber-border/40 flex flex-wrap items-center gap-y-2 gap-x-4 text-[11px] font-mono text-slate-400">
-        <span className="text-slate-300 font-semibold">Earn XP:</span>
-        <span className="text-emerald-400">Quiz: +{XP_REWARDS.QUIZ_CORRECT} XP/correct</span>
-        <span className="text-cyan-400">Phishing: +{XP_REWARDS.PHISHING_EMAIL} XP</span>
-        <span className="text-amber-400">Attack Scenario: +{XP_REWARDS.SCENARIO_COMPLETE} XP</span>
-        <span className="text-purple-400">Strong Password: +{XP_REWARDS.PASSWORD_STRONG} XP</span>
-        <span className="text-slate-300">Website Inspection: +{XP_REWARDS.WEBSITE_CHECK} XP</span>
+      <div className="mt-5 pt-4 border-t border-cyber-border/40 flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-slate-400">
+        <div className="flex flex-wrap items-center gap-y-2 gap-x-4">
+          <span className="text-slate-300 font-semibold">Earn XP:</span>
+          <span className="text-emerald-400">Quiz: +{XP_REWARDS.QUIZ_CORRECT} XP/correct</span>
+          <span className="text-cyan-400">Phishing: +{XP_REWARDS.PHISHING_EMAIL} XP</span>
+          <span className="text-amber-400">Attack Scenario: +{XP_REWARDS.SCENARIO_COMPLETE} XP</span>
+          <span className="text-purple-400">Strong Password: +{XP_REWARDS.PASSWORD_STRONG} XP</span>
+          <span className="text-slate-300">Website Inspection: +{XP_REWARDS.WEBSITE_CHECK} XP</span>
+        </div>
+        {xp > 0 && (
+          <button
+            onClick={() => {
+              if (window.confirm("Reset your defense XP and simulation statistics?")) {
+                resetProgress();
+              }
+            }}
+            className="text-slate-500 hover:text-danger text-[10px] transition-colors underline cursor-pointer"
+          >
+            Reset Progress
+          </button>
+        )}
       </div>
     </CyberCard>
   );

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { getRankInfo } from "../data/rankProgression";
 
@@ -22,16 +22,16 @@ export const ThemeProvider = ({ children }) => {
     document.body.classList.toggle("dark-theme", theme === "dark");
   }, [theme]);
 
-  const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
+  const toggleTheme = useCallback(() => setTheme((t) => (t === "dark" ? "light" : "dark")), [setTheme]);
 
-  const unlockAchievement = (id) => {
+  const unlockAchievement = useCallback((id) => {
     setAchievements((prev) => {
       if (prev.includes(id)) return prev;
       return [...prev, id];
     });
-  };
+  }, [setAchievements]);
 
-  const addXP = (amount) => {
+  const addXP = useCallback((amount) => {
     const safeAmount = Math.max(0, Number(amount) || 0);
     if (safeAmount <= 0) return;
 
@@ -45,23 +45,40 @@ export const ThemeProvider = ({ children }) => {
       }
       return newXP;
     });
-  };
+  }, [setXP]);
 
-  const dismissLevelUp = () => setLevelUpNotification(null);
+  const dismissLevelUp = useCallback(() => setLevelUpNotification(null), []);
 
-  const recordQuizScore = (score, total) => {
+  const recordQuizScore = useCallback((score, total) => {
     setQuizScores((prev) => [
       ...prev.slice(-9),
       { score, total, date: new Date().toISOString(), pct: Math.round((score / total) * 100) },
     ]);
     setSimulationStats((s) => ({ ...s, quizzesTaken: s.quizzesTaken + 1 }));
-    if (score === total) unlockAchievement("perfect-quiz");
-    if (score >= total * 0.8) unlockAchievement("quiz-master");
-  };
+    setAchievements((prev) => {
+      const next = [...prev];
+      if (score === total && !next.includes("perfect-quiz")) next.push("perfect-quiz");
+      if (score >= total * 0.8 && !next.includes("quiz-master")) next.push("quiz-master");
+      return next;
+    });
+  }, [setQuizScores, setSimulationStats, setAchievements]);
 
-  const incrementStat = (key) => {
+  const incrementStat = useCallback((key) => {
     setSimulationStats((s) => ({ ...s, [key]: (s[key] || 0) + 1 }));
-  };
+  }, [setSimulationStats]);
+
+  const resetProgress = useCallback(() => {
+    setXP(0);
+    setAchievements([]);
+    setQuizScores([]);
+    setSimulationStats({
+      phishingCompleted: 0,
+      websitesChecked: 0,
+      quizzesTaken: 0,
+      scenariosCompleted: 0,
+    });
+    setLevelUpNotification(null);
+  }, [setXP, setAchievements, setQuizScores, setSimulationStats]);
 
   const rankInfo = getRankInfo(xp);
 
@@ -81,6 +98,7 @@ export const ThemeProvider = ({ children }) => {
         addXP,
         levelUpNotification,
         dismissLevelUp,
+        resetProgress,
       }}
     >
       {children}
