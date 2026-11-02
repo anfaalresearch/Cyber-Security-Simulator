@@ -6,19 +6,26 @@ import { CyberCard } from "../components/CyberCard";
 import { AnimatedButton } from "../components/AnimatedButton";
 import { analyzePassword } from "../utils/passwordStrength";
 import { useTheme } from "../context/ThemeContext";
+import { XP_REWARDS } from "../data/rankProgression";
 import { cn } from "../utils/helpers";
 
 export const PasswordAnalyzer = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const { unlockAchievement } = useTheme();
+  const [awardedXP, setAwardedXP] = useState(false);
+  const { unlockAchievement, addXP } = useTheme();
 
   const analysis = analyzePassword(password);
 
   const handlePasswordChange = (val) => {
     setPassword(val);
-    if (analyzePassword(val).score >= 8) {
+    const result = analyzePassword(val);
+    if (result.score >= 8) {
       unlockAchievement("password-pro");
+      if (!awardedXP) {
+        setAwardedXP(true);
+        addXP(XP_REWARDS.PASSWORD_STRONG);
+      }
     }
   };
 
@@ -88,6 +95,11 @@ export const PasswordAnalyzer = () => {
             <span>Score: {analysis.score}/10</span>
             <span>10</span>
           </div>
+          {analysis.score >= 8 && (
+            <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-400 text-xs font-mono">
+              <span>+{XP_REWARDS.PASSWORD_STRONG} XP Earned (Robust Password)</span>
+            </div>
+          )}
         </div>
       </CyberCard>
 

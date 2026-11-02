@@ -20,7 +20,7 @@ const navLinks = [
 export const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const scrolled = useScrollPosition();
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, rankInfo } = useTheme();
 
   return (
     <nav
@@ -69,6 +69,36 @@ export const Navbar = () => {
 
           {/* Actions */}
           <div className="flex items-center gap-2">
+            {rankInfo && (
+              <Link
+                to="/dashboard"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg border bg-white/5 hover:bg-white/10 transition-all"
+                style={{ borderColor: `${rankInfo.color}50` }}
+                title={`Cyber Rank: ${rankInfo.title} (${rankInfo.xp} XP)`}
+              >
+                <span className="text-base leading-none">{rankInfo.badge}</span>
+                <div className="hidden sm:flex flex-col text-left">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-mono font-bold text-white leading-tight">
+                      {rankInfo.title}
+                    </span>
+                    <span className="text-[10px] font-mono text-slate-400">
+                      {rankInfo.xp} XP
+                    </span>
+                  </div>
+                  <div className="w-24 h-1 bg-cyber-border rounded-full overflow-hidden mt-1">
+                    <div
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{
+                        width: `${rankInfo.progressPercent}%`,
+                        backgroundColor: rankInfo.color,
+                      }}
+                    />
+                  </div>
+                </div>
+              </Link>
+            )}
+
             <button
               onClick={toggleTheme}
               className="p-2 rounded-lg text-slate-400 hover:text-neon-green hover:bg-white/5 transition-colors"
@@ -98,6 +128,26 @@ export const Navbar = () => {
             className="lg:hidden bg-cyber-black/95 backdrop-blur-xl border-b border-neon-green/10"
           >
             <div className="px-4 py-4 space-y-1">
+              {rankInfo && (
+                <div
+                  className="p-3 mb-3 rounded-lg border bg-white/5 flex items-center justify-between"
+                  style={{ borderColor: `${rankInfo.color}50` }}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">{rankInfo.badge}</span>
+                    <div>
+                      <p className="text-sm font-bold text-white">{rankInfo.title}</p>
+                      <p className="text-xs text-slate-400 font-mono">{rankInfo.xp} XP</p>
+                    </div>
+                  </div>
+                  <span
+                    className="text-xs font-mono px-2 py-0.5 rounded border"
+                    style={{ borderColor: `${rankInfo.color}50`, color: rankInfo.color }}
+                  >
+                    {rankInfo.progressPercent}%
+                  </span>
+                </div>
+              )}
               {navLinks.map((link) => (
                 <NavLink
                   key={link.to}

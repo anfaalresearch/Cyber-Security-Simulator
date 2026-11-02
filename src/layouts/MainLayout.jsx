@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
 import { ScrollToTop } from "../components/ScrollToTop";
+import { LevelUpModal } from "../components/LevelUpModal";
 import { pageTransition } from "../animations/variants";
 
 export const MainLayout = () => {
@@ -11,6 +12,7 @@ export const MainLayout = () => {
   return (
     <div className="min-h-screen flex flex-col animated-gradient cyber-grid-bg">
       <Navbar />
+      <LevelUpModal />
       <main className="flex-1 pt-16">
         <AnimatePresence mode="wait">
           <motion.div

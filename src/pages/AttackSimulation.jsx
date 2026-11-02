@@ -6,6 +6,7 @@ import { CyberCard } from "../components/CyberCard";
 import { AnimatedButton } from "../components/AnimatedButton";
 import { attackScenarios } from "../data/attackScenarios";
 import { useTheme } from "../context/ThemeContext";
+import { XP_REWARDS } from "../data/rankProgression";
 import { cn } from "../utils/helpers";
 
 export const AttackSimulation = () => {
@@ -15,7 +16,7 @@ export const AttackSimulation = () => {
   const [selectedChoice, setSelectedChoice] = useState(null);
   const [showFeedback, setShowFeedback] = useState(false);
   const [completed, setCompleted] = useState([]);
-  const { unlockAchievement, incrementStat } = useTheme();
+  const { unlockAchievement, incrementStat, addXP } = useTheme();
 
   const scenario = attackScenarios.find((s) => s.id === activeScenario);
   const step = scenario?.steps[stepIndex];
@@ -34,6 +35,7 @@ export const AttackSimulation = () => {
 
     if (isNewCompletion) {
       setCompleted(nextCompleted);
+      addXP(XP_REWARDS.SCENARIO_COMPLETE);
     }
 
     setActiveScenario(null);
@@ -100,9 +102,14 @@ export const AttackSimulation = () => {
               animate={{ opacity: 1, y: 0 }}
               className="mt-6 p-4 rounded-lg bg-white/5 border border-cyber-border"
             >
-              <p className="text-neon-cyan text-xs font-mono mb-2">
-                SCORE: +{selectedChoice.score}/10
-              </p>
+              <div className="flex items-center gap-3 mb-2">
+                <p className="text-neon-cyan text-xs font-mono">
+                  SCORE: +{selectedChoice.score}/10
+                </p>
+                <span className="text-xs font-mono text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/20">
+                  +{XP_REWARDS.SCENARIO_COMPLETE} XP on Completion
+                </span>
+              </div>
               <p className="text-slate-300 text-sm mb-4">{selectedChoice.feedback}</p>
               <p className="text-neon-green text-xs font-mono">
                 BEST ACTION: {scenario.bestAction}

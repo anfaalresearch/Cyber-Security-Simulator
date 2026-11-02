@@ -14,6 +14,7 @@ import { CyberCard } from "../components/CyberCard";
 import { AnimatedButton } from "../components/AnimatedButton";
 import { phishingEmails, phishingTacticsGuide } from "../data/phishingEmails";
 import { useTheme } from "../context/ThemeContext";
+import { XP_REWARDS } from "../data/rankProgression";
 import { cn } from "../utils/helpers";
 
 export const PhishingSimulator = () => {
@@ -21,7 +22,8 @@ export const PhishingSimulator = () => {
   const [markedAreas, setMarkedAreas] = useState([]);
   const [submitted, setSubmitted] = useState(false);
   const [userVerdict, setUserVerdict] = useState(null);
-  const { unlockAchievement, incrementStat } = useTheme();
+  const [completedEmails, setCompletedEmails] = useState([]);
+  const { unlockAchievement, incrementStat, addXP } = useTheme();
 
   const email = phishingEmails[emailIndex];
 
@@ -34,6 +36,10 @@ export const PhishingSimulator = () => {
 
   const handleSubmit = () => {
     setSubmitted(true);
+    if (!completedEmails.includes(emailIndex)) {
+      setCompletedEmails((prev) => [...prev, emailIndex]);
+      addXP(XP_REWARDS.PHISHING_EMAIL);
+    }
     if (emailIndex === phishingEmails.length - 1) {
       unlockAchievement("phishing-hunter");
       incrementStat("phishingCompleted");
@@ -217,6 +223,10 @@ export const PhishingSimulator = () => {
                 </div>
 
                 <p className="text-slate-300 mb-4">{email.explanation}</p>
+
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-neon-cyan text-xs font-mono mb-4">
+                  <span>+{XP_REWARDS.PHISHING_EMAIL} Defense XP Earned</span>
+                </div>
 
                 {email.tactics.length > 0 && (
                   <div className="mb-4">

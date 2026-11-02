@@ -1,5 +1,6 @@
-import { createContext, useContext, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
+import { getRankInfo } from "../data/rankProgression";
 
 const ThemeContext = createContext(null);
 
@@ -7,6 +8,8 @@ export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useLocalStorage("cyber-theme", "dark");
   const [achievements, setAchievements] = useLocalStorage("cyber-achievements", []);
   const [quizScores, setQuizScores] = useLocalStorage("cyber-quiz-scores", []);
+  const [xp, setXP] = useLocalStorage("cyber-xp", 0);
+  const [levelUpNotification, setLevelUpNotification] = useState(null);
   const [simulationStats, setSimulationStats] = useLocalStorage("cyber-sim-stats", {
     phishingCompleted: 0,
     websitesChecked: 0,
@@ -28,6 +31,24 @@ export const ThemeProvider = ({ children }) => {
     });
   };
 
+  const addXP = (amount) => {
+    const safeAmount = Math.max(0, Number(amount) || 0);
+    if (safeAmount <= 0) return;
+
+    setXP((prevXP) => {
+      const oldRank = getRankInfo(prevXP);
+      const newXP = prevXP + safeAmount;
+      const newRank = getRankInfo(newXP);
+
+      if (newRank.tier > oldRank.tier) {
+        setLevelUpNotification(newRank);
+      }
+      return newXP;
+    });
+  };
+
+  const dismissLevelUp = () => setLevelUpNotification(null);
+
   const recordQuizScore = (score, total) => {
     setQuizScores((prev) => [
       ...prev.slice(-9),
@@ -42,6 +63,8 @@ export const ThemeProvider = ({ children }) => {
     setSimulationStats((s) => ({ ...s, [key]: (s[key] || 0) + 1 }));
   };
 
+  const rankInfo = getRankInfo(xp);
+
   return (
     <ThemeContext.Provider
       value={{
@@ -53,6 +76,11 @@ export const ThemeProvider = ({ children }) => {
         recordQuizScore,
         simulationStats,
         incrementStat,
+        xp,
+        rankInfo,
+        addXP,
+        levelUpNotification,
+        dismissLevelUp,
       }}
     >
       {children}

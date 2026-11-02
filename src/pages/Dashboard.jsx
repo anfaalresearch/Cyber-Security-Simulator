@@ -12,6 +12,7 @@ import { Activity, TrendingUp, Shield, AlertTriangle, ChevronRight } from "lucid
 import { SectionTitle } from "../components/SectionTitle";
 import { CyberCard } from "../components/CyberCard";
 import { StatsCard } from "../components/StatsCard";
+import { RankCard } from "../components/RankCard";
 import { AchievementBadge } from "../components/AchievementBadge";
 import { AnimatedButton } from "../components/AnimatedButton";
 import { useTheme } from "../context/ThemeContext";
@@ -68,6 +69,9 @@ export const Dashboard = () => {
         subtitle="Track your training progress and performance metrics"
         align="left"
       />
+
+      {/* Cyber Defense Rank & Career Progression */}
+      <RankCard />
 
       {/* User stats */}
       <motion.div

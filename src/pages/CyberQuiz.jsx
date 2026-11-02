@@ -8,6 +8,7 @@ import { AnimatedButton } from "../components/AnimatedButton";
 import { quizQuestions } from "../data/quizQuestions";
 import { shuffleArray, getScoreGrade, cn } from "../utils/helpers";
 import { useTheme } from "../context/ThemeContext";
+import { XP_REWARDS } from "../data/rankProgression";
 
 const QUIZ_TIME = 300; // 5 minutes
 const QUESTIONS_PER_QUIZ = 5;
@@ -22,7 +23,7 @@ export const CyberQuiz = () => {
   const [finished, setFinished] = useState(false);
   const [timeLeft, setTimeLeft] = useState(QUIZ_TIME);
   const [started, setStarted] = useState(false);
-  const { recordQuizScore, unlockAchievement } = useTheme();
+  const { recordQuizScore, unlockAchievement, addXP } = useTheme();
 
   const startQuiz = useCallback(() => {
     setQuestions(shuffleArray(quizQuestions).slice(0, QUESTIONS_PER_QUIZ));
@@ -77,8 +78,11 @@ export const CyberQuiz = () => {
   useEffect(() => {
     if (finished && started && questions.length > 0) {
       recordQuizScore(score, questions.length);
+      if (score > 0) {
+        addXP(score * XP_REWARDS.QUIZ_CORRECT);
+      }
     }
-  }, [finished, started, score, questions.length, recordQuizScore]);
+  }, [finished, started, score, questions.length, recordQuizScore, addXP]);
 
   const formatTime = (s) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
   const progress = started && !finished ? ((current + (answered ? 1 : 0)) / questions.length) * 100 : 0;
@@ -109,10 +113,17 @@ export const CyberQuiz = () => {
           <p className="text-2xl text-white mb-2">
             {score} / {questions.length} correct
           </p>
-          <p className="text-slate-500 mb-8">
+          <p className="text-slate-500 mb-4">
             {Math.round((score / questions.length) * 100)}% accuracy
           </p>
-          <AnimatedButton onClick={startQuiz} icon={RotateCcw}>Try Again</AnimatedButton>
+          {score > 0 && (
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neon-green/10 border border-neon-green/30 text-neon-green text-xs font-mono mb-6">
+              <span>+{score * XP_REWARDS.QUIZ_CORRECT} Defense XP Earned</span>
+            </div>
+          )}
+          <div>
+            <AnimatedButton onClick={startQuiz} icon={RotateCcw}>Try Again</AnimatedButton>
+          </div>
         </CyberCard>
       </div>
     );

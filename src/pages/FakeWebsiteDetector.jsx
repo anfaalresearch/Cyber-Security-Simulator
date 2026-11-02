@@ -15,13 +15,15 @@ import { CyberCard } from "../components/CyberCard";
 import { AnimatedButton } from "../components/AnimatedButton";
 import { websiteExamples } from "../data/websites";
 import { useTheme } from "../context/ThemeContext";
+import { XP_REWARDS } from "../data/rankProgression";
 import { cn } from "../utils/helpers";
 
 export const FakeWebsiteDetector = () => {
   const [selectedId, setSelectedId] = useState(websiteExamples[0].id);
   const [verdict, setVerdict] = useState(null);
   const [showResult, setShowResult] = useState(false);
-  const { incrementStat } = useTheme();
+  const [checkedSites, setCheckedSites] = useState([]);
+  const { incrementStat, addXP } = useTheme();
 
   const site = websiteExamples.find((s) => s.id === selectedId);
 
@@ -29,6 +31,10 @@ export const FakeWebsiteDetector = () => {
     setVerdict(userSaysFake);
     setShowResult(true);
     incrementStat("websitesChecked");
+    if (!checkedSites.includes(site.id)) {
+      setCheckedSites((prev) => [...prev, site.id]);
+      addXP(XP_REWARDS.WEBSITE_CHECK);
+    }
   };
 
   
@@ -180,9 +186,12 @@ export const FakeWebsiteDetector = () => {
                   <p className="text-white font-medium mb-2">
                     {verdict === site.isFake ? "✓ Correct!" : "✗ Incorrect"}
                   </p>
-                  <p className="text-slate-400 text-sm">
+                  <p className="text-slate-400 text-sm mb-2">
                     This site is {site.isFake ? "FAKE" : "LEGITIMATE"}.
                   </p>
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-500/10 border border-slate-500/30 text-slate-300 text-xs font-mono">
+                    <span>+{XP_REWARDS.WEBSITE_CHECK} Defense XP</span>
+                  </div>
                 </div>
 
                 {site.redFlags.length > 0 && (
