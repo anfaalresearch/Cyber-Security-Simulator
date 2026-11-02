@@ -80,6 +80,13 @@ export const ThemeProvider = ({ children }) => {
     setLevelUpNotification(null);
   }, [setXP, setAchievements, setQuizScores, setSimulationStats]);
 
+  useEffect(() => {
+    // Sanity cleanup if stats were inflated by an earlier render loop
+    if (xp > 50000 || (simulationStats?.quizzesTaken || 0) > 1000) {
+      resetProgress();
+    }
+  }, [xp, simulationStats?.quizzesTaken, resetProgress]);
+
   const rankInfo = getRankInfo(xp);
 
   return (
