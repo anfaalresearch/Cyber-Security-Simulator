@@ -35,7 +35,10 @@ export const AttackSimulation = () => {
 
     if (isNewCompletion) {
       setCompleted(nextCompleted);
-      addXP(XP_REWARDS.SCENARIO_COMPLETE);
+      const earnedXP = (selectedChoice?.score || 0) * 10;
+      if (earnedXP > 0) {
+        addXP(earnedXP);
+      }
     }
 
     setActiveScenario(null);
@@ -107,7 +110,7 @@ export const AttackSimulation = () => {
                   SCORE: +{selectedChoice.score}/10
                 </p>
                 <span className="text-xs font-mono text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/20">
-                  +{XP_REWARDS.SCENARIO_COMPLETE} XP on Completion
+                  +{selectedChoice.score * 10} XP Earned
                 </span>
               </div>
               <p className="text-slate-300 text-sm mb-4">{selectedChoice.feedback}</p>

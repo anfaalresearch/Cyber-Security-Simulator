@@ -163,7 +163,7 @@ export const RankCard = () => {
           <span className="text-slate-300 font-semibold">Earn XP:</span>
           <span className="text-emerald-400">Quiz: +{XP_REWARDS.QUIZ_CORRECT} XP/correct</span>
           <span className="text-cyan-400">Phishing: +{XP_REWARDS.PHISHING_EMAIL} XP</span>
-          <span className="text-amber-400">Attack Scenario: +{XP_REWARDS.SCENARIO_COMPLETE} XP</span>
+          <span className="text-amber-400">Attack Scenario: Up to +100 XP (Points × 10)</span>
           <span className="text-purple-400">Strong Password: +{XP_REWARDS.PASSWORD_STRONG} XP</span>
           <span className="text-slate-300">Website Inspection: +{XP_REWARDS.WEBSITE_CHECK} XP</span>
         </div>
