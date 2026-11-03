@@ -13,6 +13,7 @@ const navLinks = [
   { to: "/password-analyzer", label: "Passwords" },
   { to: "/cyber-quiz", label: "Quiz", children: [{ to: "/custom-quiz", label: "Custom Quiz" }] },
   { to: "/attack-simulation", label: "Scenarios" },
+  { to: "/firewall", label: "Firewall" },
   { to: "/dashboard", label: "Dashboard" },
   { to: "/about", label: "About" },
 ];
