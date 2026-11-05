@@ -43,4 +43,12 @@ export const achievementList = [
     icon: Target,
     color: "text-neon-purple",
   },
+
+    {
+    id: "incident-investigator",
+    title: "Evidence Analyst",
+    description: "Correctly investigate a security incident",
+    icon: Shield,
+    color: "text-neon-purple",
+  },
 ];

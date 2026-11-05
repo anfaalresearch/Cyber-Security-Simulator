@@ -85,12 +85,13 @@ export const Dashboard = () => {
         variants={staggerContainer}
         initial="hidden"
         animate="visible"
-        className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
+        className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8"
       >
         {[
           { label: "Phishing Completed", value: simulationStats.phishingCompleted, icon: Shield },
           { label: "Websites Checked", value: simulationStats.websitesChecked, icon: Activity },
           { label: "Quizzes Taken", value: simulationStats.quizzesTaken, icon: TrendingUp },
+          { label: "Investigations Completed", value: simulationStats.investigationsCompleted, icon: AlertTriangle },
           { label: "Scenarios Done", value: simulationStats.scenariosCompleted, icon: AlertTriangle },
         ].map((stat, i) => (
           <motion.div key={i} variants={fadeInUp}>
