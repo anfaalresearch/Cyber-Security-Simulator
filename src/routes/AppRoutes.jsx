@@ -11,6 +11,7 @@ import { AttackPathExplorer } from "../pages/AttackPathExplorer";
 import { Dashboard } from "../pages/Dashboard";
 import { About } from "../pages/About";
 import { NotFound } from "../pages/NotFound";
+import { CyberNews } from "../pages/CyberNews";
 
 export const AppRoutes = () => (
   <Routes>
@@ -25,6 +26,7 @@ export const AppRoutes = () => (
       <Route path="attack-paths" element={<AttackPathExplorer />} />
       <Route path="dashboard" element={<Dashboard />} />
       <Route path="about" element={<About />} />
+      <Route path="cyber-news" element={<CyberNews />} />
       <Route path="*" element={<NotFound />} />
     </Route>
   </Routes>
