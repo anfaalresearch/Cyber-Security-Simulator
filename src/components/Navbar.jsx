@@ -15,6 +15,7 @@ const navLinks = [
       { to: "/phishing-simulator", label: "Phishing Simulator" },
       { to: "/fake-website-detector", label: "Website Detector" },
       { to: "/password-analyzer", label: "Password Analyzer" },
+      { to: "/firewall", label: "Network Firewall" },
       { to: "/incident-investigation", label: "Incident Investigation" },
     ],
   },

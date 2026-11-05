@@ -8,6 +8,7 @@ import { CyberQuiz } from "../pages/CyberQuiz";
 import { CustomQuizBuilder } from "../pages/CustomQuizBuilder";
 import { AttackSimulation } from "../pages/AttackSimulation";
 import { AttackPathExplorer } from "../pages/AttackPathExplorer";
+import { FirewallSimulator } from "../pages/FirewallSimulator";
 import { Dashboard } from "../pages/Dashboard";
 import { About } from "../pages/About";
 import { NotFound } from "../pages/NotFound";
@@ -25,6 +26,7 @@ export const AppRoutes = () => (
       <Route path="custom-quiz" element={<CustomQuizBuilder />} />
       <Route path="attack-simulation" element={<AttackSimulation />} />
       <Route path="attack-paths" element={<AttackPathExplorer />} />
+      <Route path="firewall" element={<FirewallSimulator />} />
       <Route path="dashboard" element={<Dashboard />} />
       <Route path="about" element={<About />} />
       <Route path="incident-investigation" element={<IncidentInvestigation />} />
