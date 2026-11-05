@@ -160,7 +160,8 @@ export const FirewallSimulator = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column: Challenge Selector & Briefing */}
           <div className="space-y-6">
-            <CyberCard title="Select Mission" glowColor="neon-cyan">
+            <CyberCard glowColor="neon-cyan">
+              <h3 className="text-white font-semibold mb-4">Select Mission</h3>
               <div className="space-y-3">
                 {DEFENSE_CHALLENGES.map((ch) => (
                   <button
@@ -188,7 +189,8 @@ export const FirewallSimulator = () => {
               </div>
             </CyberCard>
 
-            <CyberCard title="Mission Briefing" glowColor="neon-purple">
+            <CyberCard glowColor="neon-purple">
+              <h3 className="text-white font-semibold mb-4">Mission Briefing</h3>
               <p className="text-sm text-gray-300 mb-4">{currentChallenge.description}</p>
               <div className="bg-cyber-dark/60 p-3 rounded border border-gray-800 space-y-2 text-xs font-mono">
                 <div className="text-neon-green">Test Packet Wave: {currentChallenge.testPackets.length} Packets</div>
@@ -198,10 +200,8 @@ export const FirewallSimulator = () => {
             </CyberCard>
 
             {challengeResult && (
-              <CyberCard
-                title="Simulation Results"
-                glowColor={challengeResult.passed ? "neon-green" : "neon-red"}
-              >
+              <CyberCard glowColor={challengeResult.passed ? "neon-green" : "neon-red"}>
+                <h3 className="text-white font-semibold mb-4">Simulation Results</h3>
                 <div className="text-center py-4 space-y-3">
                   <div className={`text-4xl font-extrabold font-mono ${challengeResult.passed ? "text-neon-green" : "text-red-500"}`}>
                     {challengeResult.score}%
@@ -238,7 +238,8 @@ export const FirewallSimulator = () => {
 
           {/* Right Columns: Rule Editor & Testing Console */}
           <div className="lg:col-span-2 space-y-6">
-            <CyberCard title="Firewall ACL Rule Table (Ordered Priority)" glowColor="neon-green">
+            <CyberCard glowColor="neon-green">
+              <h3 className="text-white font-semibold mb-4">Firewall ACL Rule Table (Ordered Priority)</h3>
               <div className="overflow-x-auto mb-4">
                 <table className="w-full text-left text-xs font-mono">
                   <thead>
@@ -392,7 +393,8 @@ export const FirewallSimulator = () => {
             </CyberCard>
 
             {challengeResult && (
-              <CyberCard title="Packet Execution Log" glowColor="neon-cyan">
+              <CyberCard glowColor="neon-cyan">
+                <h3 className="text-white font-semibold mb-4">Packet Execution Log</h3>
                 <div className="space-y-2 max-h-96 overflow-y-auto font-mono text-xs">
                   {challengeResult.results.map((r, i) => (
                     <div
@@ -427,7 +429,8 @@ export const FirewallSimulator = () => {
         /* Sandbox Mode */
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="space-y-6">
-            <CyberCard title="Packet Injection Console" glowColor="neon-green">
+            <CyberCard glowColor="neon-green">
+              <h3 className="text-white font-semibold mb-4">Packet Injection Console</h3>
               <div className="space-y-4 text-xs font-mono">
                 <div>
                   <label className="block text-gray-400 mb-1">Source IP</label>
@@ -487,7 +490,8 @@ export const FirewallSimulator = () => {
           </div>
 
           <div className="space-y-6">
-            <CyberCard title="Firewall Decision Stream" glowColor="neon-cyan">
+            <CyberCard glowColor="neon-cyan">
+              <h3 className="text-white font-semibold mb-4">Firewall Decision Stream</h3>
               {sandboxLog.length === 0 ? (
                 <div className="text-center py-12 text-gray-500 font-mono text-sm">
                   No packets transmitted yet. Configure a packet and click Transmit Packet.
