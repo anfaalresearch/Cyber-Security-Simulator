@@ -40,3 +40,46 @@ test("extracts unique HTTP(S) links from email text", () => {
     ["https://example.com/a"]
   );
 });
+
+
+test("correctly identifies registrable domains with .co.nz suffix", () => {
+  const result = analyzeUrl("https://paypa1-secure.co.nz");
+
+  assert.equal(result.registrableDomain, "paypa1-secure.co.nz");
+  assert.ok(
+    result.findings.some((finding) => finding.code === "brand-lookalike")
+  );
+  assert.ok(
+    !result.findings.some((finding) => finding.code === "brand-in-subdomain")
+  );
+});
+
+test("correctly identifies brands in subdomains with multi-part suffixes", () => {
+  const result = analyzeUrl("https://paypal.fakewebsite.co.nz");
+
+  assert.equal(result.registrableDomain, "fakewebsite.co.nz");
+  assert.ok(
+    result.findings.some((finding) => finding.code === "brand-in-subdomain")
+  );
+});
+
+test("supports other multi-part public suffixes", () => {
+  const ukResult = analyzeUrl("https://example.co.uk");
+  const auResult = analyzeUrl("https://example.com.au");
+
+  assert.equal(ukResult.registrableDomain, "example.co.uk");
+  assert.equal(auResult.registrableDomain, "example.com.au");
+});
+
+test("handles single-label domains and raw IP addresses", () => {
+  const localhostResult = analyzeUrl("http://localhost");
+  const ipResult = analyzeUrl("http://192.0.2.10");
+
+  // Single-label domains are rejected by the existing validator.
+  assert.equal(localhostResult.isValid, false);
+
+  // Raw IP addresses are accepted and correctly identified.
+  assert.equal(ipResult.isValid, true);
+  assert.equal(ipResult.registrableDomain, "192.0.2.10");
+  assert.ok(ipResult.findings.some((f) => f.code === "ip-host"));
+});

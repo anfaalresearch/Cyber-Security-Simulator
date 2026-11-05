@@ -17,6 +17,7 @@ Cyber Security Awareness Simulator
 - **Live Threat Alert Ticker** — Simulated cyber threat feed
 - **Responsive Design** — Mobile, tablet, and desktop optimized
 - **Smooth Animations** — Framer Motion page transitions and scroll effects
+- **Cybersecurity News** — Stay updated about cybersecurity developments through news articles 
 
 ## Tech Stack
 
@@ -84,6 +85,7 @@ src/
 | `/password-analyzer` | Password strength tool |
 | `/cyber-quiz` | Timed security quiz |
 | `/attack-simulation` | Interactive attack scenarios |
+| `/cyber-news` | Curated cybersecurity news |
 | `/dashboard` | Analytics & progress charts |
 | `/about` | About page & achievements |
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, KeyRound, Copy, RefreshCw, Check, X } from "lucide-react";
 import { SectionTitle } from "../components/SectionTitle";
@@ -13,9 +13,15 @@ export const PasswordAnalyzer = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [awardedXP, setAwardedXP] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const copyTimer = useRef(null);
   const { unlockAchievement, addXP } = useTheme();
 
   const analysis = analyzePassword(password);
+
+  useEffect(() => {
+    return () => clearTimeout(copyTimer.current);
+  }, []);
 
   const handlePasswordChange = (val) => {
     setPassword(val);
@@ -29,8 +35,15 @@ export const PasswordAnalyzer = () => {
     }
   };
 
-  const copySuggestion = () => {
-    navigator.clipboard.writeText(analysis.suggestions);
+    const copySuggestion = async () => {
+    try {
+      await navigator.clipboard.writeText(analysis.suggestions);
+      setCopied(true);
+      clearTimeout(copyTimer.current);
+      copyTimer.current = setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Could not copy to clipboard", err);
+    }
   };
 
   const checkItems = [
@@ -145,9 +158,14 @@ export const PasswordAnalyzer = () => {
             <div className="flex gap-2">
               <button
                 onClick={copySuggestion}
-                className="p-2 rounded-lg hover:bg-white/5 text-slate-400 hover:text-neon-green transition-colors"
+                aria-label={copied ? "Copied to clipboard" : "Copy suggested password"}
+                className={cn(
+                  "p-2 rounded-lg hover:bg-white/5 transition-colors flex items-center gap-1.5",
+                  copied ? "text-neon-green" : "text-slate-400 hover:text-neon-green"
+                )}
               >
-                <Copy size={16} />
+                {copied ? <Check size={16} /> : <Copy size={16} />}
+                {copied && <span className="text-xs font-mono">Copied!</span>}
               </button>
               <button
                 onClick={() => handlePasswordChange(analysis.suggestions)}

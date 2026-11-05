@@ -1,3 +1,5 @@
+import { parse } from "tldts";
+
 const BRAND_NAMES = [
   "paypal", "amazon", "google", "microsoft", "apple",
   "netflix", "facebook", "instagram", "github", "linkedin",
@@ -9,10 +11,7 @@ const SUSPICIOUS_TLDS = new Set([
   "support", "top", "work", "zip",
 ]);
 
-const MULTI_PART_SUFFIXES = new Set([
-  "co.uk", "org.uk", "ac.uk", "com.au", "net.au", "co.in",
-  "firm.in", "net.in", "org.in", "com.br", "com.cn", "co.jp",
-]);
+
 
 const HOMOGLYPH_REPLACEMENTS = {
   "0": "o",
@@ -36,15 +35,9 @@ const isIpAddress = (hostname) => {
 };
 
 const getRegistrableDomain = (hostname) => {
-  const labels = hostname.toLowerCase().split(".").filter(Boolean);
-  if (labels.length <= 2) return hostname.toLowerCase();
+  const result = parse(hostname);
 
-  const lastTwo = labels.slice(-2).join(".");
-  if (MULTI_PART_SUFFIXES.has(lastTwo) && labels.length >= 3) {
-    return labels.slice(-3).join(".");
-  }
-
-  return lastTwo;
+  return result.domain || hostname.toLowerCase();
 };
 
 const getRiskLevel = (score) => {
@@ -123,12 +116,13 @@ export const analyzeUrl = (input) => {
     }
   };
 
-  const registrableDomain = getRegistrableDomain(hostname);
-  const domainLabels = registrableDomain.split(".");
-  const registrableLabel = domainLabels[0] || "";
-  const subdomain = hostname === registrableDomain
-    ? ""
-    : hostname.slice(0, -(registrableDomain.length + 1));
+  const domainInfo = parse(hostname);
+
+  const registrableDomain = domainInfo.domain || hostname;
+  const registrableLabel = registrableDomain
+  .split(".")[0] || "";
+
+  const subdomain = domainInfo.subdomain || "";
   const normalizedLabel = normalizeLookalikes(registrableLabel);
   const topLevelDomain = hostname.split(".").at(-1) || "";
 

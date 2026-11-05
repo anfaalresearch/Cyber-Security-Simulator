@@ -8,7 +8,14 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { Activity, TrendingUp, Shield, AlertTriangle, ChevronRight } from "lucide-react";
+import {
+  Activity,
+  TrendingUp,
+  Shield,
+  AlertTriangle,
+  ChevronRight,
+  ClipboardList,
+} from "lucide-react";
 import { SectionTitle } from "../components/SectionTitle";
 import { CyberCard } from "../components/CyberCard";
 import { StatsCard } from "../components/StatsCard";
@@ -165,23 +172,41 @@ export const Dashboard = () => {
       </div>
 
       {/* Quiz history */}
-      {quizScores.length > 0 && (
-        <CyberCard>
-          <h3 className="text-white font-semibold mb-4">Your Quiz History</h3>
-          <div className="space-y-2">
-            {quizScores.map((q, i) => (
-              <div key={i} className="flex justify-between items-center p-3 rounded-lg bg-white/5">
-                <span className="text-slate-400 text-sm font-mono">
-                  {new Date(q.date).toLocaleDateString()}
-                </span>
-                <span className="text-neon-green font-mono">
-                  {q.score}/{q.total} ({q.pct}%)
-                </span>
-              </div>
-            ))}
-          </div>
-        </CyberCard>
-      )}
+{quizScores.length > 0 ? (
+  <CyberCard>
+    <h3 className="text-white font-semibold mb-4">Your Quiz History</h3>
+    <div className="space-y-2">
+      {quizScores.map((q, i) => (
+        <div key={i} className="flex justify-between items-center p-3 rounded-lg bg-white/5">
+          <span className="text-slate-400 text-sm font-mono">
+            {new Date(q.date).toLocaleDateString()}
+          </span>
+          <span className="text-neon-green font-mono">
+            {q.score}/{q.total} ({q.pct}%)
+          </span>
+        </div>
+      ))}
+    </div>
+  </CyberCard>
+) : (
+  <CyberCard>
+    <div className="py-10 text-center">
+      <ClipboardList className="mx-auto text-slate-500 mb-4" size={40} />
+
+      <h3 className="text-white font-semibold mb-2">
+        No quiz attempts yet!
+      </h3>
+
+      <p className="text-sm text-slate-400 mb-6 max-w-md mx-auto">
+        Complete your first Cyber Safety Quiz to track your scores.
+      </p>
+
+      <AnimatedButton to="/cyber-quiz" icon={ChevronRight} variant="secondary">
+        Start Cyber Safety Quiz
+      </AnimatedButton>
+    </div>
+  </CyberCard>
+)}
     </div>
   );
 };
