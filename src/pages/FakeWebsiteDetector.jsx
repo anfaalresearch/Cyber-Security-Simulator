@@ -67,7 +67,10 @@ export const FakeWebsiteDetector = () => {
           {websiteExamples.map((s) => (
             <button
               key={s.id}
-              onClick={() => setSelectedId(s.id)}
+	      onClick={() => {
+		reset();
+		setSelectedId(s.id);
+	      }}
               className={cn(
                 "w-full text-left p-3 rounded-lg border text-sm transition-all",
                 selectedId === s.id
