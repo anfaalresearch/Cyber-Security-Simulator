@@ -19,7 +19,7 @@ const DEFAULT_SANDBOX_RULES = [
 ];
 
 export const FirewallSimulator = () => {
-  const { awardXp } = useTheme();
+  const { addXP } = useTheme();
   const [activeTab, setActiveTab] = useState("challenges"); // "challenges" | "sandbox"
   
   // Challenge State
@@ -94,8 +94,8 @@ export const FirewallSimulator = () => {
   const handleRunChallenge = () => {
     const res = runDefenseScenario(currentChallenge, challengeRules);
     setChallengeResult(res);
-    if (awardXp && res.xpAwarded > 0) {
-      awardXp(res.xpAwarded, "firewall", currentChallenge.title);
+    if (addXP && res.xpAwarded > 0) {
+      addXP(res.xpAwarded);
     }
   };
 
