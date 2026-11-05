@@ -16,17 +16,20 @@ export const useLocalStorage = (key, initialValue) => {
   const [storedValue, setStoredValue] = useState(readValue);
 
   const setValue = useCallback(
-    (value) => {
-      try {
-        const valueToStore = value instanceof Function ? value(storedValue) : value;
-        setStoredValue(valueToStore);
-        window.localStorage.setItem(key, JSON.stringify(valueToStore));
-      } catch (error) {
-        console.warn(`Error saving localStorage key "${key}":`, error);
-      }
-    },
-    [key, storedValue]
-  );
+  (value) => {
+    try {
+      const currentValue = readValue();
+      const valueToStore =
+        value instanceof Function ? value(currentValue) : value;
+
+      setStoredValue(valueToStore);
+      window.localStorage.setItem(key, JSON.stringify(valueToStore));
+    } catch (error) {
+      console.warn(`Error saving localStorage key "${key}":`, error);
+    }
+  },
+  [key]
+);
 
   useEffect(() => {
     setStoredValue(readValue());

@@ -8,17 +8,36 @@ import { cn } from "../utils/helpers";
 
 const navLinks = [
   { to: "/", label: "Home" },
-  { to: "/phishing-simulator", label: "Phishing" },
-  { to: "/fake-website-detector", label: "Websites" },
-  { to: "/password-analyzer", label: "Passwords" },
-  { to: "/cyber-quiz", label: "Quiz", children: [{ to: "/custom-quiz", label: "Custom Quiz" }] },
-  { to: "/attack-simulation", label: "Scenarios" },
-  { to: "/attack-paths", label: "Attack Paths" },
+  {
+    to: "/phishing-simulator",
+    label: "Defend",
+    children: [
+      { to: "/phishing-simulator", label: "Phishing Simulator" },
+      { to: "/fake-website-detector", label: "Website Detector" },
+      { to: "/password-analyzer", label: "Password Analyzer" },
+      { to: "/incident-investigation", label: "Incident Investigation" },
+    ],
+  },
+  {
+    to: "/attack-simulation",
+    label: "Attacks",
+    children: [
+      { to: "/attack-simulation", label: "Attack Scenarios" },
+      { to: "/attack-paths", label: "Attack Path Explorer" },
+    ],
+  },
+  {
+    to: "/cyber-quiz",
+    label: "Quiz",
+    children: [
+      { to: "/cyber-quiz", label: "Take Quiz" },
+      { to: "/custom-quiz", label: "Custom Quiz Builder" },
+    ],
+  },
   { to: "/cyber-news", label: "News" },
   { to: "/dashboard", label: "Dashboard" },
   { to: "/about", label: "About" },
 ];
-
 export const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const scrolled = useScrollPosition();
@@ -57,7 +76,7 @@ export const Navbar = () => {
                   end={link.to === "/"}
                   className={({ isActive }) =>
                     cn(
-                      "px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+                      "px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap",
                       isActive
                         ? "text-neon-green bg-neon-green/10"
                         : "text-slate-400 hover:text-white hover:bg-white/5"
@@ -67,7 +86,7 @@ export const Navbar = () => {
                   {link.label}
                 </NavLink>
                 {link.children && (
-                  <div className="absolute left-0 top-full hidden min-w-44 pt-2 group-hover:block group-focus-within:block">
+                  <div className="absolute left-0 top-full hidden min-w-44 pt-2 group-hover:block">
                     <div className="rounded-xl border border-neon-green/15 bg-cyber-black/95 p-2 shadow-xl backdrop-blur-xl">
                       {link.children.map((child) => (
                         <NavLink
