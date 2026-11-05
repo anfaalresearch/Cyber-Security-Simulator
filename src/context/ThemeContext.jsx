@@ -9,6 +9,10 @@ export const ThemeProvider = ({ children }) => {
   const [achievements, setAchievements] = useLocalStorage("cyber-achievements", []);
   const [quizScores, setQuizScores] = useLocalStorage("cyber-quiz-scores", []);
   const [xp, setXP] = useLocalStorage("cyber-xp", 0);
+  const [completedScenarios, setCompletedScenarios] = useLocalStorage(
+    "cyber-completed-scenarios",
+    []
+  );
   const [levelUpNotification, setLevelUpNotification] = useState(null);
   const [simulationStats, setSimulationStats] = useLocalStorage("cyber-sim-stats", {
     phishingCompleted: 0,
@@ -22,7 +26,10 @@ export const ThemeProvider = ({ children }) => {
     document.body.classList.toggle("dark-theme", theme === "dark");
   }, [theme]);
 
-  const toggleTheme = useCallback(() => setTheme((t) => (t === "dark" ? "light" : "dark")), [setTheme]);
+  const toggleTheme = useCallback(
+    () => setTheme((t) => (t === "dark" ? "light" : "dark")),
+    [setTheme]
+  );
 
   const unlockAchievement = useCallback((id) => {
     setAchievements((prev) => {
@@ -71,6 +78,7 @@ export const ThemeProvider = ({ children }) => {
     setXP(0);
     setAchievements([]);
     setQuizScores([]);
+    setCompletedScenarios([]);
     setSimulationStats({
       phishingCompleted: 0,
       websitesChecked: 0,
@@ -78,10 +86,10 @@ export const ThemeProvider = ({ children }) => {
       scenariosCompleted: 0,
     });
     setLevelUpNotification(null);
-  }, [setXP, setAchievements, setQuizScores, setSimulationStats]);
+  }, [setXP, setAchievements, setQuizScores, setCompletedScenarios, setSimulationStats]);
 
-  useEffect(() => {
-    // Sanity cleanup if stats were inflated by an earlier render loop
+ useEffect(() => {
+    // Sanity cleanup if stats were inflated by an earlier render loop.
     if (xp > 50000 || (simulationStats?.quizzesTaken || 0) > 1000) {
       resetProgress();
     }
