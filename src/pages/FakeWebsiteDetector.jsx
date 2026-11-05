@@ -7,6 +7,7 @@ import {
   AlertTriangle,
   CheckCircle,
   XCircle,
+  Circle,
   ExternalLink,
   Shield,
 } from "lucide-react";
@@ -165,16 +166,20 @@ export const FakeWebsiteDetector = () => {
                 { label: "Official Domain", safe: !site.isFake },
                 { label: "No Suspicious Popup", safe: !site.hasPopup },
                 { label: "Valid TLD (.com)", safe: !site.displayUrl.includes(".xyz") && !site.displayUrl.includes(".net") },
-              ].map((check, i) => (
-                <div key={i} className={cn(
-                  "flex items-center gap-2 p-3 rounded-lg text-sm",
-                  check.safe ? "bg-neon-green/10 text-neon-green" : "bg-danger/10 text-danger"
-                )}>
-                  {check.safe ? <CheckCircle size={16} /> : <XCircle size={16} />}
-                  {check.label}
-                </div>
-              ))}
-            </div>
+      ].map((check, i) => (
+  <div key={i} className={cn(
+    "flex items-center gap-2 p-3 rounded-lg text-sm",
+    !showResult
+      ? "bg-white/5 text-slate-300"
+      : check.safe
+        ? "bg-neon-green/10 text-neon-green"
+        : "bg-danger/10 text-danger"
+  )}>
+    {!showResult ? <Circle size={16} /> : check.safe ? <CheckCircle size={16} /> : <XCircle size={16} />}
+    {check.label}
+  </div>
+))}
+</div>
 
             {!showResult ? (
               <div className="flex gap-3">
