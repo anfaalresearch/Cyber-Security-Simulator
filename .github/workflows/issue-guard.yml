@@ -21,13 +21,15 @@ jobs:
             const actor = context.payload.sender.login.toLowerCase();
             const author = issue.user.login.toLowerCase();
             const assignee = issue.assignee ? issue.assignee.login.toLowerCase() : null;
+            const stateReason = issue.state_reason;
 
             const MAINTAINERS = ['ras-al', 'prinzez', 'adwaith620', 'nillubtw', 'antonl-dev', 'hrudulmmn', 'ganes4real'];
             const isMaintainer = MAINTAINERS.includes(actor);
 
             if (action === 'closed') {
               // 1. Prevent spite-closing: If claimed by another contributor, author/non-maintainer cannot close it
-              if (assignee && assignee !== actor && !isMaintainer) {
+              // (Never applies when closed as completed via PR merge)
+              if (stateReason !== 'completed' && assignee && assignee !== actor && !isMaintainer) {
                 console.log(`Unauthorized close of #${issueNumber} by ${actor}. Claimed by ${assignee}. Reopening.`);
 
                 await github.rest.issues.update({
@@ -80,18 +82,12 @@ jobs:
                 }
               }
 
-              // 3. Clear any lingering assignees on legitimate close to release claim
-              if (issue.assignees && issue.assignees.length > 0) {
-                await github.rest.issues.removeAssignees({
-                  ...context.repo,
-                  issue_number: issueNumber,
-                  assignees: issue.assignees.map(a => a.login)
-                });
-              }
+              // Note: When an issue is closed legitimately (e.g. via merged PR or completed by maintainer),
+              // we preserve the assignee so the solver keeps full credit on the closed issue.
             }
 
             if (action === 'reopened') {
-              // 4. Anti-exploit on reopen: clear assignees and notify that mentor re-approval is required
+              // 3. Anti-exploit on reopen: clear assignees and notify that mentor re-approval is required
               if (!isMaintainer) {
                 console.log(`Issue #${issueNumber} reopened by ${actor}. Resetting assignees.`);
 
@@ -110,4 +106,3 @@ jobs:
                 });
               }
             }
-
