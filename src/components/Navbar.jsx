@@ -25,6 +25,7 @@ const navLinks = [
     children: [
       { to: "/attack-simulation", label: "Attack Scenarios" },
       { to: "/attack-paths", label: "Attack Path Explorer" },
+      { to: "/web-security", label: "Web Security Lab" },
     ],
   },
   {

@@ -14,6 +14,7 @@ import { About } from "../pages/About";
 import { NotFound } from "../pages/NotFound";
 import { IncidentInvestigation } from "../pages/IncidentInvestigation";
 import { CyberNews } from "../pages/CyberNews";
+import { WebSecurityLab } from "../pages/WebSecurityLab";
 
 export const AppRoutes = () => (
   <Routes>
@@ -27,6 +28,7 @@ export const AppRoutes = () => (
       <Route path="attack-simulation" element={<AttackSimulation />} />
       <Route path="attack-paths" element={<AttackPathExplorer />} />
       <Route path="firewall" element={<FirewallSimulator />} />
+      <Route path="web-security" element={<WebSecurityLab />} />
       <Route path="dashboard" element={<Dashboard />} />
       <Route path="about" element={<About />} />
       <Route path="incident-investigation" element={<IncidentInvestigation />} />
