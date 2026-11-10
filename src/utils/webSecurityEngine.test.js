@@ -9,6 +9,7 @@ import {
   evaluateCommandInjection,
   evaluateChallengeMission,
 } from './webSecurityEngine.js';
+import { WEB_SECURITY_MISSIONS } from '../data/webSecurityScenarios.js';
 
 test('encodeHtmlEntities safely escapes dangerous characters', () => {
   assert.equal(encodeHtmlEntities(''), '');
@@ -215,4 +216,120 @@ test('evaluateChallengeMission awards XP and evaluates pass/fail status', () => 
   const failResult = evaluateChallengeMission(sqliMission, failSolution);
   assert.equal(failResult.passed, false);
   assert.equal(failResult.xpEarned, 0);
+});
+
+test('evaluateSqlQuery handles SQL comments, stacked queries, and undefined template safely', () => {
+  const commentRun = evaluateSqlQuery({
+    input: "admin' --",
+    parameterized: false,
+  });
+  assert.equal(commentRun.bypassed, true);
+  assert.match(commentRun.executedQuery, /SELECT \* FROM users/);
+
+  const stackedRun = evaluateSqlQuery({
+    queryTemplate: "SELECT * FROM users WHERE username = '{INPUT}'",
+    input: "alice'; DROP TABLE users;--",
+    parameterized: false,
+  });
+  assert.equal(stackedRun.bypassed, true);
+});
+
+test('evaluateXssPayload detects svg onload vector and preserves safe text under htmlEncoding', () => {
+  const svgRun = evaluateXssPayload({
+    input: '<svg onload="alert(1)" />',
+  });
+  assert.equal(svgRun.executed, true);
+  assert.equal(svgRun.vulnerable, true);
+
+  const safeTextRun = evaluateXssPayload({
+    input: 'Great dashboard experience!',
+    htmlEncoding: true,
+  });
+  assert.equal(safeTextRun.executed, false);
+  assert.equal(safeTextRun.remediated, true);
+  assert.equal(safeTextRun.renderedHtml, 'Great dashboard experience!');
+});
+
+test('evaluateIdorAccess handles admin privileges and missing object IDs', () => {
+  const adminResult = evaluateIdorAccess({
+    requestedId: 101,
+    currentSession: { userId: 999, role: 'admin' },
+    enforceOwnership: true,
+  });
+  assert.equal(adminResult.status, 200);
+  assert.equal(adminResult.authorized, true);
+  assert.equal(adminResult.breached, false);
+
+  const missingResult = evaluateIdorAccess({
+    requestedId: 9999,
+    currentSession: { userId: 102, role: 'user' },
+    enforceOwnership: true,
+  });
+  assert.equal(missingResult.status, 404);
+  assert.equal(missingResult.record, null);
+});
+
+test('evaluateCommandInjection executes safe host pings when whitelisting is enabled', () => {
+  const validPing = evaluateCommandInjection({
+    input: '8.8.8.8',
+    whitelistValidation: true,
+  });
+  assert.equal(validPing.vulnerable, false);
+  assert.equal(validPing.executed, true);
+  assert.equal(validPing.remediated, true);
+  assert.match(validPing.commandRun, /^ping -c 2 8\.8\.8\.8$/);
+});
+
+test('evaluateChallengeMission validates all 4 WEB_SECURITY_MISSIONS end-to-end', () => {
+  const [sqliMission, xssMission, idorMission, rceMission] = WEB_SECURITY_MISSIONS;
+
+  // 1. SQLi mission with queryTemplate property from scenario config
+  const sqliPass = evaluateChallengeMission(sqliMission, {
+    payload: sqliMission.defaultPayload,
+    defenseActive: true,
+  });
+  assert.equal(sqliPass.passed, true);
+  assert.equal(sqliPass.xpEarned, sqliMission.xpReward);
+
+  // 2. XSS mission
+  const xssPass = evaluateChallengeMission(xssMission, {
+    payload: xssMission.defaultPayload,
+    defenseActive: true,
+  });
+  assert.equal(xssPass.passed, true);
+  assert.equal(xssPass.xpEarned, xssMission.xpReward);
+
+  const xssFail = evaluateChallengeMission(xssMission, {
+    payload: 'benign review',
+    defenseActive: true,
+  });
+  assert.equal(xssFail.passed, false);
+
+  // 3. IDOR mission
+  const idorPass = evaluateChallengeMission(idorMission, {
+    targetId: '101',
+    defenseActive: true,
+  });
+  assert.equal(idorPass.passed, true);
+  assert.equal(idorPass.xpEarned, idorMission.xpReward);
+
+  const idorFailOwn = evaluateChallengeMission(idorMission, {
+    targetId: '102',
+    defenseActive: true,
+  });
+  assert.equal(idorFailOwn.passed, false);
+
+  // 4. RCE mission
+  const rcePass = evaluateChallengeMission(rceMission, {
+    payload: rceMission.defaultPayload,
+    defenseActive: true,
+  });
+  assert.equal(rcePass.passed, true);
+  assert.equal(rcePass.xpEarned, rceMission.xpReward);
+
+  const rceFailSafeHost = evaluateChallengeMission(rceMission, {
+    payload: '8.8.8.8',
+    defenseActive: true,
+  });
+  assert.equal(rceFailSafeHost.passed, false);
 });

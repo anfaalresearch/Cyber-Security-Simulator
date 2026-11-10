@@ -58,6 +58,10 @@ export const isValidHost = (host) => {
  * @returns {Object} evaluation outcome
  */
 export const evaluateSqlQuery = ({ queryTemplate, input, parameterized = false }) => {
+  const safeTemplate =
+    typeof queryTemplate === "string" && queryTemplate.length > 0
+      ? queryTemplate
+      : "SELECT * FROM users WHERE username = '{INPUT}'";
   const rawInput = typeof input === "string" ? input : "";
 
   // Common SQL injection vectors
@@ -75,13 +79,9 @@ export const evaluateSqlQuery = ({ queryTemplate, input, parameterized = false }
 
   if (parameterized) {
     // Parameterized defense: input is passed as a bound parameter ($1 or ?)
-    const safeCompiledQuery = queryTemplate.replace(
-      "'{INPUT}'",
-      "?"
-    ).replace(
-      "{INPUT}",
-      "?"
-    );
+    const safeCompiledQuery = safeTemplate
+      .replace("'{INPUT}'", "?")
+      .replace("{INPUT}", "?");
 
     return {
       vulnerable: false,
@@ -105,7 +105,7 @@ export const evaluateSqlQuery = ({ queryTemplate, input, parameterized = false }
   }
 
   // Vulnerable interpolation
-  const interpolatedQuery = queryTemplate.replace("{INPUT}", rawInput);
+  const interpolatedQuery = safeTemplate.replace("{INPUT}", rawInput);
 
   if (hasSqliPattern) {
     let technique = "SQL Injection Detected";
@@ -450,14 +450,15 @@ export const evaluateChallengeMission = (mission, solution) => {
 
   switch (mission.category) {
     case "sqli": {
+      const sqlTemplate = mission.queryTemplate || mission.template;
       const exploitResult = evaluateSqlQuery({
-        queryTemplate: mission.template,
+        queryTemplate: sqlTemplate,
         input: solution.payload,
         parameterized: false,
       });
 
       const defenseResult = evaluateSqlQuery({
-        queryTemplate: mission.template,
+        queryTemplate: sqlTemplate,
         input: solution.payload,
         parameterized: solution.defenseActive,
       });
@@ -574,7 +575,10 @@ export const evaluateChallengeMission = (mission, solution) => {
         whitelistValidation: solution.defenseActive,
       });
 
-      const exploitSucceeded = exploitResult.vulnerable && exploitResult.executed && (exploitResult.output.length > 50 || exploitResult.technique.includes("Command Injection"));
+      const exploitSucceeded =
+        exploitResult.vulnerable &&
+        exploitResult.executed &&
+        exploitResult.technique.includes("Command Injection");
       const defenseNeutralized = !defenseResult.vulnerable && solution.defenseActive;
 
       if (exploitSucceeded && defenseNeutralized) {

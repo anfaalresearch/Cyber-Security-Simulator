@@ -17,6 +17,7 @@ const navLinks = [
       { to: "/password-analyzer", label: "Password Analyzer" },
       { to: "/firewall", label: "Network Firewall" },
       { to: "/incident-investigation", label: "Incident Investigation" },
+      { to: "/web-security", label: "Web Security Lab" },
     ],
   },
   {
@@ -25,7 +26,6 @@ const navLinks = [
     children: [
       { to: "/attack-simulation", label: "Attack Scenarios" },
       { to: "/attack-paths", label: "Attack Path Explorer" },
-      { to: "/web-security", label: "Web Security Lab" },
     ],
   },
   {
