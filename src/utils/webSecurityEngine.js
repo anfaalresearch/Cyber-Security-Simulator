@@ -463,6 +463,8 @@ export const evaluateChallengeMission = (mission, solution) => {
         parameterized: solution.defenseActive,
       });
 
+      const activeResult = solution.defenseActive ? defenseResult : exploitResult;
+
       // A pass requires that the exploit succeeded without defense, AND was neutralized with defense active
       const exploitSucceeded = exploitResult.bypassed;
       const defenseNeutralized = !defenseResult.bypassed && solution.defenseActive;
@@ -474,6 +476,7 @@ export const evaluateChallengeMission = (mission, solution) => {
           xpEarned: mission.xpReward || 60,
           feedback:
             "Outstanding work! You demonstrated authentication bypass via SQL injection and successfully neutralized the threat by applying Parameterized Prepared Statements.",
+          executionResult: activeResult,
         };
       }
 
@@ -483,6 +486,7 @@ export const evaluateChallengeMission = (mission, solution) => {
           score: 30,
           xpEarned: 0,
           feedback: "The submitted payload did not successfully trigger an SQL injection bypass. Try a tautology vector (e.g. ' OR 1=1 --).",
+          executionResult: activeResult,
         };
       }
 
@@ -491,6 +495,7 @@ export const evaluateChallengeMission = (mission, solution) => {
         score: 50,
         xpEarned: 0,
         feedback: "Exploit succeeded, but the defense was not properly enabled to remediate the vulnerability.",
+        executionResult: activeResult,
       };
     }
 
@@ -505,6 +510,8 @@ export const evaluateChallengeMission = (mission, solution) => {
         htmlEncoding: solution.defenseActive,
       });
 
+      const activeResult = solution.defenseActive ? defenseResult : exploitResult;
+
       const exploitSucceeded = exploitResult.executed;
       const defenseNeutralized = !defenseResult.executed && solution.defenseActive;
 
@@ -515,6 +522,7 @@ export const evaluateChallengeMission = (mission, solution) => {
           xpEarned: mission.xpReward || 60,
           feedback:
             "Great job! You executed a Cross-Site Scripting payload and secured the application using Context-Aware HTML Entity Encoding.",
+          executionResult: activeResult,
         };
       }
 
@@ -525,6 +533,7 @@ export const evaluateChallengeMission = (mission, solution) => {
         feedback: exploitSucceeded
           ? "Payload executed in the browser, but contextual encoding remediation was not enabled."
           : "Payload did not trigger script execution. Try an inline tag or event handler vector.",
+        executionResult: activeResult,
       };
     }
 
@@ -541,6 +550,8 @@ export const evaluateChallengeMission = (mission, solution) => {
         enforceOwnership: solution.defenseActive,
       });
 
+      const activeResult = solution.defenseActive ? defenseResult : exploitResult;
+
       const exploitSucceeded = exploitResult.breached;
       const defenseNeutralized = defenseResult.status === 403 && solution.defenseActive;
 
@@ -551,6 +562,7 @@ export const evaluateChallengeMission = (mission, solution) => {
           xpEarned: mission.xpReward || 50,
           feedback:
             "Excellent! You identified unauthorized object access via IDOR and enforced server-side ownership checks to block horizontal escalation.",
+          executionResult: activeResult,
         };
       }
 
@@ -561,6 +573,7 @@ export const evaluateChallengeMission = (mission, solution) => {
         feedback: exploitSucceeded
           ? "Unauthorized record was accessed, but object ownership enforcement was not toggled."
           : "Target record does not trigger a cross-account breach.",
+        executionResult: activeResult,
       };
     }
 
@@ -575,6 +588,8 @@ export const evaluateChallengeMission = (mission, solution) => {
         whitelistValidation: solution.defenseActive,
       });
 
+      const activeResult = solution.defenseActive ? defenseResult : exploitResult;
+
       const exploitSucceeded =
         exploitResult.vulnerable &&
         exploitResult.executed &&
@@ -588,6 +603,7 @@ export const evaluateChallengeMission = (mission, solution) => {
           xpEarned: mission.xpReward || 60,
           feedback:
             "Superb! You demonstrated command separator injection and enforced strict input whitelist validation to protect the host operating system.",
+          executionResult: activeResult,
         };
       }
 
@@ -598,6 +614,7 @@ export const evaluateChallengeMission = (mission, solution) => {
         feedback: exploitSucceeded
           ? "Command injection succeeded, but whitelist validation was not enabled to block it."
           : "Input did not execute a chained shell command.",
+        executionResult: activeResult,
       };
     }
 

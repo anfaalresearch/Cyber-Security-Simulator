@@ -207,6 +207,8 @@ test('evaluateChallengeMission awards XP and evaluates pass/fail status', () => 
   assert.equal(passResult.passed, true);
   assert.equal(passResult.score, 100);
   assert.equal(passResult.xpEarned, 60);
+  assert.ok(passResult.executionResult);
+  assert.equal(passResult.executionResult.remediated, true);
 
   // Incomplete solution: exploit triggered but defense disabled
   const failSolution = {
@@ -216,6 +218,8 @@ test('evaluateChallengeMission awards XP and evaluates pass/fail status', () => 
   const failResult = evaluateChallengeMission(sqliMission, failSolution);
   assert.equal(failResult.passed, false);
   assert.equal(failResult.xpEarned, 0);
+  assert.ok(failResult.executionResult);
+  assert.equal(failResult.executionResult.bypassed, true);
 });
 
 test('evaluateSqlQuery handles SQL comments, stacked queries, and undefined template safely', () => {
@@ -290,6 +294,7 @@ test('evaluateChallengeMission validates all 4 WEB_SECURITY_MISSIONS end-to-end'
   });
   assert.equal(sqliPass.passed, true);
   assert.equal(sqliPass.xpEarned, sqliMission.xpReward);
+  assert.ok(sqliPass.executionResult.executedQuery);
 
   // 2. XSS mission
   const xssPass = evaluateChallengeMission(xssMission, {
@@ -298,6 +303,7 @@ test('evaluateChallengeMission validates all 4 WEB_SECURITY_MISSIONS end-to-end'
   });
   assert.equal(xssPass.passed, true);
   assert.equal(xssPass.xpEarned, xssMission.xpReward);
+  assert.ok(xssPass.executionResult.renderedHtml !== undefined);
 
   const xssFail = evaluateChallengeMission(xssMission, {
     payload: 'benign review',
@@ -312,6 +318,7 @@ test('evaluateChallengeMission validates all 4 WEB_SECURITY_MISSIONS end-to-end'
   });
   assert.equal(idorPass.passed, true);
   assert.equal(idorPass.xpEarned, idorMission.xpReward);
+  assert.equal(idorPass.executionResult.status, 403);
 
   const idorFailOwn = evaluateChallengeMission(idorMission, {
     targetId: '102',
@@ -326,6 +333,7 @@ test('evaluateChallengeMission validates all 4 WEB_SECURITY_MISSIONS end-to-end'
   });
   assert.equal(rcePass.passed, true);
   assert.equal(rcePass.xpEarned, rceMission.xpReward);
+  assert.ok(rcePass.executionResult.output);
 
   const rceFailSafeHost = evaluateChallengeMission(rceMission, {
     payload: '8.8.8.8',

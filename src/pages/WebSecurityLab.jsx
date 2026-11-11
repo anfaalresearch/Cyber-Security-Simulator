@@ -213,8 +213,8 @@ export const WebSecurityLab = () => {
                 {currentMission.description}
               </p>
 
-              {/* Code Snippet Comparison */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Code Snippet Comparison (Stacked Vertically for Maximum Readability) */}
+              <div className="flex flex-col gap-4">
                 <div className="bg-cyber-black/70 p-3 rounded-lg border border-danger/30">
                   <div className="flex items-center gap-2 text-xs font-semibold text-danger mb-2">
                     <AlertTriangle className="w-3.5 h-3.5" />
@@ -379,6 +379,96 @@ export const WebSecurityLab = () => {
                     {missionResult.feedback}
                   </p>
                 </div>
+
+                {/* Live Execution Output & Security Analysis */}
+                {missionResult.executionResult && (
+                  <div className="mt-4 pt-4 border-t border-cyber-border space-y-3 font-mono text-xs">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-white font-semibold flex items-center gap-2 font-sans text-sm">
+                        <Terminal className="w-4 h-4 text-neon-green" />
+                        Live Execution Output & Security Analysis
+                      </span>
+                      <span
+                        className={`text-xs px-2.5 py-0.5 rounded font-bold ${
+                          missionResult.executionResult.vulnerable || missionResult.executionResult.breached
+                            ? "bg-danger/20 text-danger border border-danger/40"
+                            : "bg-neon-green/20 text-neon-green border border-neon-green/40"
+                        }`}
+                      >
+                        {missionResult.executionResult.technique}
+                      </span>
+                    </div>
+
+                    {/* Technical Explanation Breakdown */}
+                    <div className="p-3 rounded-lg bg-cyber-dark/60 border border-cyber-border text-slate-300">
+                      <span className="text-slate-400 block mb-1 font-sans text-xs font-semibold">
+                        Technical Explanation:
+                      </span>
+                      {missionResult.executionResult.explanation}
+                    </div>
+
+                    {/* 1. SQL Query, Bound Parameters & Mock Database Records */}
+                    {missionResult.executionResult.executedQuery && (
+                      <div className="p-3 rounded-lg bg-cyber-black border border-cyber-border">
+                        <span className="text-slate-400 block mb-1">Executed SQL Query:</span>
+                        <code className="text-neon-green break-all">{missionResult.executionResult.executedQuery}</code>
+                        {missionResult.executionResult.boundParameters && (
+                          <div className="mt-2 text-slate-400">
+                            Bound Parameters:{" "}
+                            <span className="text-warning">
+                              {JSON.stringify(missionResult.executionResult.boundParameters)}
+                            </span>
+                          </div>
+                        )}
+                        {missionResult.executionResult.mockRecords && missionResult.executionResult.mockRecords.length > 0 && (
+                          <div className="mt-3 pt-2 border-t border-cyber-border/60">
+                            <span className="text-slate-400 block mb-1">
+                              Database Query Result ({missionResult.executionResult.mockRecords.length} records returned):
+                            </span>
+                            <pre className="text-neon-cyan overflow-x-auto whitespace-pre">
+                              {JSON.stringify(missionResult.executionResult.mockRecords, null, 2)}
+                            </pre>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* 2. Rendered DOM Output & Stolen Cookie (XSS) */}
+                    {missionResult.executionResult.renderedHtml !== undefined && (
+                      <div className="p-3 rounded-lg bg-cyber-black border border-cyber-border">
+                        <span className="text-slate-400 block mb-1">Rendered DOM Output:</span>
+                        <code className="text-warning break-all">{missionResult.executionResult.renderedHtml}</code>
+                        {missionResult.executionResult.capturedCookie && (
+                          <div className="mt-2 p-2 rounded bg-danger/10 border border-danger/30 text-danger break-all">
+                            ⚠️ Simulated Stolen Cookie: {missionResult.executionResult.capturedCookie}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* 3. API Response (IDOR) */}
+                    {missionResult.executionResult.record && (
+                      <div className="p-3 rounded-lg bg-cyber-black border border-cyber-border">
+                        <span className="text-slate-400 block mb-1">
+                          API Response (Account ID #{missionResult.executionResult.record.ownerId}):
+                        </span>
+                        <pre className="text-neon-cyan overflow-x-auto whitespace-pre">
+                          {JSON.stringify(missionResult.executionResult.record, null, 2)}
+                        </pre>
+                      </div>
+                    )}
+
+                    {/* 4. Subprocess Stdout (Command Injection) */}
+                    {missionResult.executionResult.output && (
+                      <div className="p-3 rounded-lg bg-cyber-black border border-cyber-border">
+                        <span className="text-slate-400 block mb-1">Subprocess Stdout:</span>
+                        <pre className="text-slate-200 whitespace-pre overflow-x-auto">
+                          {missionResult.executionResult.output}
+                        </pre>
+                      </div>
+                    )}
+                  </div>
+                )}
               </CyberCard>
             )}
           </div>
@@ -510,13 +600,23 @@ export const WebSecurityLab = () => {
                 {sandboxExecutionResult.executedQuery && (
                   <div className="p-3 rounded-lg bg-cyber-black border border-cyber-border">
                     <span className="text-slate-400 block mb-1">Executed SQL:</span>
-                    <code className="text-neon-green">{sandboxExecutionResult.executedQuery}</code>
+                    <code className="text-neon-green break-all">{sandboxExecutionResult.executedQuery}</code>
                     {sandboxExecutionResult.boundParameters && (
                       <div className="mt-2 text-slate-400">
                         Bound Parameters:{" "}
                         <span className="text-warning">
                           {JSON.stringify(sandboxExecutionResult.boundParameters)}
                         </span>
+                      </div>
+                    )}
+                    {sandboxExecutionResult.mockRecords && sandboxExecutionResult.mockRecords.length > 0 && (
+                      <div className="mt-3 pt-2 border-t border-cyber-border/60">
+                        <span className="text-slate-400 block mb-1">
+                          Database Query Result ({sandboxExecutionResult.mockRecords.length} records returned):
+                        </span>
+                        <pre className="text-neon-cyan overflow-x-auto whitespace-pre">
+                          {JSON.stringify(sandboxExecutionResult.mockRecords, null, 2)}
+                        </pre>
                       </div>
                     )}
                   </div>
